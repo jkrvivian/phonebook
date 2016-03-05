@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
         return -1;
     }
 
-#if defined OPT==2
+#if defined (HASH)
     entry *HashTable[35247];
 #endif
     /* build the entry */
@@ -50,7 +50,8 @@ int main(int argc, char *argv[])
     __builtin___clear_cache((char *) pHead, (char *) pHead + sizeof(entry));
 #endif
     clock_gettime(CLOCK_REALTIME, &start);
-#if defined OPT==2
+
+#if defined (HASH)
     while (fgets(line, sizeof(line), fp)) {
         while (line[i] != '\0')
             i++;
@@ -79,23 +80,35 @@ int main(int argc, char *argv[])
     char input[MAX_LAST_NAME_SIZE] = "zyxel";
     e = pHead;
 
+#if defined (HASH)
+    assert(findName(input, HashTable) &&
+           "Did you implement findName() in " IMPL "?");
+    assert(0 == strcmp(findName(input, HashTable)->lastName, "zyxel"));
+#else
     assert(findName(input, e) &&
            "Did you implement findName() in " IMPL "?");
     assert(0 == strcmp(findName(input, e)->lastName, "zyxel"));
+#endif
 
 #if defined(__GNUC__)
     __builtin___clear_cache((char *) pHead, (char *) pHead + sizeof(entry));
 #endif
     /* compute the execution time */
     clock_gettime(CLOCK_REALTIME, &start);
+#if defined (HASH)
+    findName(input, HashTable);
+#else
     findName(input, e);
+#endif
     clock_gettime(CLOCK_REALTIME, &end);
     cpu_time2 = diff_in_second(start, end);
 
     FILE *output;
 #if defined(OPT)
     output = fopen("opt.txt", "a");
-#elif OPT==2
+#endif
+
+#if defined (HASH)
     output = fopen("hash1.txt", "a");
 #else
     output = fopen("orig.txt", "a");

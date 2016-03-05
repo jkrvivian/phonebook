@@ -1,6 +1,6 @@
 #ifndef _PHONEBOOK_H
 #define _PHONEBOOK_H
-#define OPT 2
+#define HASH 1
 #define MAX_LAST_NAME_SIZE 16
 
 /* TODO: After modifying the original version, uncomment the following
@@ -12,7 +12,7 @@ typedef struct __PHONE_BOOK_ENTRY {
     struct __PHONE_BOOK_ENTRY *pNext;
 } entry;
 
-entry *findName(char lastname[], entry *pHead);
+entry *findName(char lastname[], entry *HashTable[]);
 void append(char lastName[], entry *HashTable[]);
 unsigned int BKDRHash(char *str);
 #endif

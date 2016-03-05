@@ -5,18 +5,19 @@
 
 #include "phonebook_hash1.h"
 
-/* FILL YOUR OWN IMPLEMENTATION HERE! */
-entry *findName(char lastname[], entry *pHead)
+/* FILL YOUR OWN IMPLEMENTATION HERE! */    
+entry *findName(char lastname[], entry *HashTable[])
 {
     /* TODO: implement */
     entry *tmp;
     unsigned int index = BKDRHash(lastname);
     if(HashTable[index]) {
         if (strcasecmp(lastname, HashTable[index]->lastName) == 0)
-            return tmp;
+            return HashTable[index];
         else{
-            for(tmp = HashTable[index]; (tmp->pNext) && strcasecmp(lastname, HashTable[index]->lastName) != 0; tmp = tmp->pNext);
+            for(tmp = HashTable[index]; (tmp->pNext) && strcasecmp(lastname, tmp->lastName) != 0; tmp = tmp->pNext);
             if(tmp) return tmp;
+	    else return NULL;
         }
     }
     return NULL;
