@@ -8,7 +8,7 @@
 // #define OPT 1
 typedef struct __PHONE_BOOK_ENTRY {
     char lastName[MAX_LAST_NAME_SIZE];
-    /*char firstName[16];
+/*    char firstName[16];
     char email[16];
     char phone[10];
     char cell[10];
