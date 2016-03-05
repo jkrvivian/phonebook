@@ -36,6 +36,9 @@ int main(int argc, char *argv[])
         return -1;
     }
 
+#if defined OPT==2
+    entry *HashTable[35247];
+#endif
     /* build the entry */
     entry *pHead, *e;
     pHead = (entry *) malloc(sizeof(entry));
@@ -47,6 +50,15 @@ int main(int argc, char *argv[])
     __builtin___clear_cache((char *) pHead, (char *) pHead + sizeof(entry));
 #endif
     clock_gettime(CLOCK_REALTIME, &start);
+#if defined OPT==2
+    while (fgets(line, sizeof(line), fp)) {
+        while (line[i] != '\0')
+            i++;
+        line[i - 1] = '\0';
+        i = 0;
+        append(line,HashTable);
+    }
+#else
     while (fgets(line, sizeof(line), fp)) {
         while (line[i] != '\0')
             i++;
@@ -54,6 +66,7 @@ int main(int argc, char *argv[])
         i = 0;
         e = append(line, e);
     }
+#endif
     clock_gettime(CLOCK_REALTIME, &end);
     cpu_time1 = diff_in_second(start, end);
 
@@ -82,6 +95,8 @@ int main(int argc, char *argv[])
     FILE *output;
 #if defined(OPT)
     output = fopen("opt.txt", "a");
+#elif OPT==2
+    output = fopen("hash1.txt", "a");
 #else
     output = fopen("orig.txt", "a");
 #endif
