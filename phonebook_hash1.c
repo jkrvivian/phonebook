@@ -5,7 +5,7 @@
 
 #include "phonebook_hash1.h"
 
-/* FILL YOUR OWN IMPLEMENTATION HERE! */    
+/* FILL YOUR OWN IMPLEMENTATION HERE! */
 entry *findName(char lastname[], entry *HashTable[])
 {
     /* TODO: implement */
@@ -14,10 +14,10 @@ entry *findName(char lastname[], entry *HashTable[])
     if(HashTable[index]) {
         if (strcasecmp(lastname, HashTable[index]->lastName) == 0)
             return HashTable[index];
-        else{
+        else {
             for(tmp = HashTable[index]; (tmp->pNext) && strcasecmp(lastname, tmp->lastName) != 0; tmp = tmp->pNext);
             if(tmp) return tmp;
-	    else return NULL;
+            else return NULL;
         }
     }
     return NULL;
@@ -30,16 +30,16 @@ void append(char lastName[], entry *HashTable[])
     /*if the index has no data*/
     if (!HashTable[index]) {
         HashTable[index] = (entry *) malloc(sizeof(entry));
-	strcpy(HashTable[index]->lastName, lastName);
-    	HashTable[index]->pNext = NULL;
+        strcpy(HashTable[index]->lastName, lastName);
+        HashTable[index]->pNext = NULL;
     } else {
         for(tmp = HashTable[index]; tmp->pNext != NULL; tmp = tmp->pNext);
         tmp->pNext = (entry *) malloc(sizeof(entry));
-	tmp = tmp->pNext;
-	strcpy(tmp->lastName, lastName);
+        tmp = tmp->pNext;
+        strcpy(tmp->lastName, lastName);
         tmp->pNext = NULL;
     }
-    
+
 }
 
 unsigned int BKDRHash(char lastName[])
@@ -49,7 +49,7 @@ unsigned int BKDRHash(char lastName[])
     int i=0;
     while(lastName[i] != '\0') {
         hash = hash * seed + lastName[i];
-	++i;
+        ++i;
     }
 
     return hash;
