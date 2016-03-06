@@ -6,16 +6,17 @@
 #include "phonebook_hash1.h"
 
 /* FILL YOUR OWN IMPLEMENTATION HERE! */
-entry *findName(char lastname[], entry *HashTable[])
+entry *findName(char lastname[], entry *e)
 {
     /* TODO: implement */
     entry *tmp;
-    unsigned int index = BKDRHash(lastname);
-    if(HashTable[index]) {
-        if (strcasecmp(lastname, HashTable[index]->lastName) == 0)
-            return HashTable[index];
+    //unsigned int index = BKDRHash(lastname);
+    if(e) {
+        printf("there is %s\n",e->lastName);
+        if (strcasecmp(lastname, e->lastName) == 0)
+            return e;
         else {
-            for(tmp = HashTable[index]; (tmp->pNext) && strcasecmp(lastname, tmp->lastName) != 0; tmp = tmp->pNext);
+            for(tmp = e; (tmp->pNext) && strcasecmp(lastname, tmp->lastName) != 0; tmp = tmp->pNext);
             if(tmp) return tmp;
             else return NULL;
         }
@@ -23,17 +24,19 @@ entry *findName(char lastname[], entry *HashTable[])
     return NULL;
 }
 
-void append(char lastName[], entry *HashTable[])
+void append(char lastName[], entry *e)
 {
     entry *tmp;
-    unsigned int index = BKDRHash(lastName);
     /*if the index has no data*/
-    if (!HashTable[index]) {
-        HashTable[index] = (entry *) malloc(sizeof(entry));
-        strcpy(HashTable[index]->lastName, lastName);
-        HashTable[index]->pNext = NULL;
+    if (e->pNext== NULL) {
+        e = (entry *) malloc(sizeof(entry));
+        strcpy(e->lastName, lastName);
+        e->pNext = NULL;
     } else {
-        for(tmp = HashTable[index]; tmp->pNext != NULL; tmp = tmp->pNext);
+        if(e->pNext) {
+            for(tmp = e; tmp->pNext != NULL; tmp = tmp->pNext)
+                printf("who %s\n",tmp->lastName);
+        } else tmp = e;
         tmp->pNext = (entry *) malloc(sizeof(entry));
         tmp = tmp->pNext;
         strcpy(tmp->lastName, lastName);
@@ -42,15 +45,27 @@ void append(char lastName[], entry *HashTable[])
 
 }
 
+void FreeAll(entry *e)
+{
+    entry *tmp;
+    while(e) {
+        tmp = e;
+        e = e->pNext;
+        free(tmp);
+    }
+}
+
 unsigned int BKDRHash(char lastName[])
 {
     unsigned int seed=31;
     unsigned int hash=0;
     int i=0;
-    while(lastName[i] != '\0') {
+    while(i<strlen(lastName)) {
         hash = hash * seed + lastName[i];
         ++i;
     }
+    hash %= 1051;
+    if(hash < 0) hash += 1051;
 
     return hash;
 }

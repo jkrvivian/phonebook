@@ -37,53 +37,59 @@ int main(int argc, char *argv[])
     }
 
 #if defined (HASH)
-    entry *HashTable[35247];
-#endif
+    entry pHead[SIZE], *e[SIZE];
+    printf("size of entry : %lu bytes\n", sizeof(entry));
+    for(i=0; i<SIZE; i++) {
+        e[i] = &pHead[i];
+        e[i]->pNext = NULL;
+    }
+#else
     /* build the entry */
     entry *pHead, *e;
     pHead = (entry *) malloc(sizeof(entry));
     printf("size of entry : %lu bytes\n", sizeof(entry));
     e = pHead;
     e->pNext = NULL;
+#endif
 
 #if defined(__GNUC__)
     __builtin___clear_cache((char *) pHead, (char *) pHead + sizeof(entry));
 #endif
     clock_gettime(CLOCK_REALTIME, &start);
 
+    while (fgets(line, sizeof(line), fp)) {
+        while (line[i] != '\0')
+            i++;
+        line[i - 1] = '\0';
+        i = 0;
 #if defined (HASH)
-    while (fgets(line, sizeof(line), fp)) {
-        while (line[i] != '\0')
-            i++;
-        line[i - 1] = '\0';
-        i = 0;
-        append(line,HashTable);
-    }
+        int index = BKDRHash(line);
+        append(line,e[index]);
 #else
-    while (fgets(line, sizeof(line), fp)) {
-        while (line[i] != '\0')
-            i++;
-        line[i - 1] = '\0';
-        i = 0;
         e = append(line, e);
-    }
 #endif
+    }
+
     clock_gettime(CLOCK_REALTIME, &end);
     cpu_time1 = diff_in_second(start, end);
 
     /* close file as soon as possible */
     fclose(fp);
-
+#if defined (HASH)
+    for(i=0; i<SIZE; i++)
+        e[i] = &pHead[i];
+#else
     e = pHead;
+#endif
 
     /* the givn last name to find */
     char input[MAX_LAST_NAME_SIZE] = "zyxel";
-    e = pHead;
 
 #if defined (HASH)
-    assert(findName(input, HashTable) &&
+    int index = BKDRHash(input);
+    assert(findName(input, e[index]) &&
            "Did you implement findName() in " IMPL "?");
-    assert(0 == strcmp(findName(input, HashTable)->lastName, "zyxel"));
+    assert(0 == strcmp(findName(input, e[index])->lastName, "zyxel"));
 #else
     assert(findName(input, e) &&
            "Did you implement findName() in " IMPL "?");
@@ -95,23 +101,23 @@ int main(int argc, char *argv[])
 #endif
     /* compute the execution time */
     clock_gettime(CLOCK_REALTIME, &start);
+
 #if defined (HASH)
-    findName(input, HashTable);
+    findName(input, e[index]);
 #else
     findName(input, e);
 #endif
+
     clock_gettime(CLOCK_REALTIME, &end);
     cpu_time2 = diff_in_second(start, end);
 
     FILE *output;
 #if defined (OPT)
     output = fopen("opt.txt", "a");
+#elif defined (HASH)
+    output = fopen("hash1.txt", "a");
 #else
     output = fopen("orig.txt", "a");
-#endif
-
-#if defined (HASH)
-    output = fopen("hash1.txt", "a");
 #endif
 
 
@@ -121,8 +127,12 @@ int main(int argc, char *argv[])
     printf("execution time of append() : %lf sec\n", cpu_time1);
     printf("execution time of findName() : %lf sec\n", cpu_time2);
 
+#if defined (HASH)
+    FreeAll(pHead);
+#else
     if (pHead->pNext) free(pHead->pNext);
     free(pHead);
+#endif
 
     return 0;
 }
