@@ -6,53 +6,38 @@
 #include "phonebook_hash1.h"
 
 /* FILL YOUR OWN IMPLEMENTATION HERE! */
-entry *findName(char lastname[], entry *e)
+entry *findName(char lastname[], entry *e[])
 {
     /* TODO: implement */
     entry *tmp;
-    //unsigned int index = BKDRHash(lastname);
-    if(e) {
-        printf("there is %s\n",e->lastName);
-        if (strcasecmp(lastname, e->lastName) == 0)
-            return e;
-        else {
-            for(tmp = e; (tmp->pNext) && strcasecmp(lastname, tmp->lastName) != 0; tmp = tmp->pNext);
-            if(tmp) return tmp;
-            else return NULL;
-        }
+    unsigned int n = BKDRHash(lastname);
+    /*judge if e[n] has value*/
+    if(e[n]->pNext) {
+        tmp = e[n]->pNext;
+    } else return NULL;
+    /*findname*/
+    while(tmp) {
+        if (strcasecmp(lastname, tmp->lastName) == 0)
+            return tmp;
+        tmp = tmp->pNext;
     }
     return NULL;
 }
 
-void append(char lastName[], entry *e)
+void append(char lastName[], entry *e[])
 {
     entry *tmp;
-    /*if the index has no data*/
-    if (e->pNext== NULL) {
-        e = (entry *) malloc(sizeof(entry));
-        strcpy(e->lastName, lastName);
-        e->pNext = NULL;
-    } else {
-        if(e->pNext) {
-            for(tmp = e; tmp->pNext != NULL; tmp = tmp->pNext)
-                printf("who %s\n",tmp->lastName);
-        } else tmp = e;
-        tmp->pNext = (entry *) malloc(sizeof(entry));
-        tmp = tmp->pNext;
-        strcpy(tmp->lastName, lastName);
-        tmp->pNext = NULL;
+    unsigned int n=BKDRHash(lastName);
+    /*if e[n] has no data*/
+    if (e[n]->pNext== NULL) tmp = e[n];
+    else {//find the last one pointer to append
+        for(tmp = e[n]->pNext; tmp->pNext != NULL; tmp = tmp->pNext);
+        //printf("who %s\n",tmp->lastName);
     }
-
-}
-
-void FreeAll(entry *e)
-{
-    entry *tmp;
-    while(e) {
-        tmp = e;
-        e = e->pNext;
-        free(tmp);
-    }
+    tmp->pNext = (entry *) malloc(sizeof(entry));
+    tmp = tmp->pNext;
+    strcpy(tmp->lastName, lastName);
+    tmp->pNext = NULL;
 }
 
 unsigned int BKDRHash(char lastName[])
@@ -64,9 +49,19 @@ unsigned int BKDRHash(char lastName[])
         hash = hash * seed + lastName[i];
         ++i;
     }
-    hash %= 1051;
-    if(hash < 0) hash += 1051;
 
-    return hash;
+    return hash %= SIZE;
 }
+
+void Free_List(entry *e)
+{
+    entry *tmp;
+    while(e) {
+        tmp = e->pNext;
+        free(e);
+        e = tmp;
+    }
+}
+
+
 

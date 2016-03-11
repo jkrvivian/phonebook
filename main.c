@@ -37,11 +37,12 @@ int main(int argc, char *argv[])
     }
 
 #if defined (HASH)
-    entry pHead[SIZE], *e[SIZE];
+    entry *pHead[SIZE],*e[SIZE];	//malloc pHead[],use e[] to point pHead[]
     printf("size of entry : %lu bytes\n", sizeof(entry));
-    for(i=0; i<SIZE; i++) {
-        e[i] = &pHead[i];
-        e[i]->pNext = NULL;
+    for(i=0; i<SIZE; ++i) {		//why?
+        pHead[i]=(entry *) malloc(sizeof(entry));
+        e[i]=pHead[i];
+        e[i]->pNext=NULL;
     }
 #else
     /* build the entry */
@@ -63,8 +64,7 @@ int main(int argc, char *argv[])
         line[i - 1] = '\0';
         i = 0;
 #if defined (HASH)
-        int index = BKDRHash(line);
-        append(line,e[index]);
+        append(line,e);
 #else
         e = append(line, e);
 #endif
@@ -75,9 +75,11 @@ int main(int argc, char *argv[])
 
     /* close file as soon as possible */
     fclose(fp);
+
 #if defined (HASH)
-    for(i=0; i<SIZE; i++)
-        e[i] = &pHead[i];
+    for(i=0; i<SIZE; ++i) {
+        e[i] = pHead[i];
+    }
 #else
     e = pHead;
 #endif
@@ -85,16 +87,9 @@ int main(int argc, char *argv[])
     /* the givn last name to find */
     char input[MAX_LAST_NAME_SIZE] = "zyxel";
 
-#if defined (HASH)
-    int index = BKDRHash(input);
-    assert(findName(input, e[index]) &&
-           "Did you implement findName() in " IMPL "?");
-    assert(0 == strcmp(findName(input, e[index])->lastName, "zyxel"));
-#else
     assert(findName(input, e) &&
            "Did you implement findName() in " IMPL "?");
     assert(0 == strcmp(findName(input, e)->lastName, "zyxel"));
-#endif
 
 #if defined(__GNUC__)
     __builtin___clear_cache((char *) pHead, (char *) pHead + sizeof(entry));
@@ -102,11 +97,7 @@ int main(int argc, char *argv[])
     /* compute the execution time */
     clock_gettime(CLOCK_REALTIME, &start);
 
-#if defined (HASH)
-    findName(input, e[index]);
-#else
     findName(input, e);
-#endif
 
     clock_gettime(CLOCK_REALTIME, &end);
     cpu_time2 = diff_in_second(start, end);
@@ -115,7 +106,7 @@ int main(int argc, char *argv[])
 #if defined (OPT)
     output = fopen("opt.txt", "a");
 #elif defined (HASH)
-    output = fopen("hash1.txt", "a");
+    output = fopen("hash.txt", "a");
 #else
     output = fopen("orig.txt", "a");
 #endif
@@ -128,11 +119,18 @@ int main(int argc, char *argv[])
     printf("execution time of findName() : %lf sec\n", cpu_time2);
 
 #if defined (HASH)
-    FreeAll(pHead);
+    for(i=0; i<SIZE; ++i) {
+        if(pHead[i]->pNext) {
+            Free_List(pHead[i]);
+            pHead[i] = NULL;
+        }
+    }
 #else
     if (pHead->pNext) free(pHead->pNext);
     free(pHead);
 #endif
+
+
 
     return 0;
 }

@@ -45,7 +45,7 @@ int main(void)
         opt_sum_f += opt_f;
     }
     /*hash function*/
-    fp = fopen("hash1.txt", "r");
+    fp = fopen("hash.txt", "r");
     if (!fp) {
         fp = fopen("opt.txt", "r");
         if (!fp) {

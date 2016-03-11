@@ -35,7 +35,7 @@ cache-test: $(EXEC)
 	perf stat --repeat 10 \
 		-e cache-misses,cache-references,instructions,cycles \
 		./phonebook_opt
-	perf stat --repeat 1 \
+	perf stat --repeat 10 \
 		-e cache-misses,cache-references,instructions,cycles \
 		./phonebook_hash1
 
@@ -51,4 +51,4 @@ calculate: calculate.c
 .PHONY: clean
 clean:
 	$(RM) $(EXEC) *.o perf.* \
-	      	calculate orig.txt opt.txt hash1.txt output.txt runtime.png
+	      	calculate orig.txt opt.txt hash.txt output.txt runtime.png
