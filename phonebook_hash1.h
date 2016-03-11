@@ -2,7 +2,7 @@
 #define _PHONEBOOK_H
 #define HASH 1
 #define MAX_LAST_NAME_SIZE 16
-#define SIZE 256
+#define SIZE 3571
 typedef struct __PHONE_BOOK_ENTRY {
     char lastName[MAX_LAST_NAME_SIZE];
     struct __PHONE_BOOK_ENTRY *pNext;

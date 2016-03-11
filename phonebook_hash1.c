@@ -30,14 +30,12 @@ void append(char lastName[], entry *e[])
     unsigned int n=BKDRHash(lastName);
     /*if e[n] has no data*/
     if (e[n]->pNext== NULL) tmp = e[n];
-    else {//find the last one pointer to append
-        for(tmp = e[n]->pNext; tmp->pNext != NULL; tmp = tmp->pNext);
-        //printf("who %s\n",tmp->lastName);
-    }
+    else tmp = e[n]->pNext;
     tmp->pNext = (entry *) malloc(sizeof(entry));
     tmp = tmp->pNext;
     strcpy(tmp->lastName, lastName);
     tmp->pNext = NULL;
+    e[n]=tmp;
 }
 
 unsigned int BKDRHash(char lastName[])
