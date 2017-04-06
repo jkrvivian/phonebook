@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
     /* check file opening */
     fp = fopen(DICT_FILE, "r");
     if (fp == NULL) {
-        printf("cannot open the file\n");
+            printf("cannot open the file\n\n");
         return -1;
     }
 
